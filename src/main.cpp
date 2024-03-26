@@ -37,35 +37,29 @@ Mecho mecho(mfrc, storage, lock, disp);
 
 
 void setup() {
-  Serial.begin(9600);
   servo.attach(SERVO_PIN_N);
   lock.close();
   disp.verificationRequest();
 
   SPI.begin();
   mfrc.PCD_Init();
-  mfrc.PCD_DumpVersionToSerial();
 
   mecho.setState(Mecho::State::OPENED);
 
   button.attachClick([]() {
     mecho.setState(Mecho::State::REGISTRATING);
-    Serial.println("clk");
   });
 
   button.attachDoubleClick([]() {
     mecho.setState(Mecho::State::DELETING);
-    Serial.println("dclk");
   });
 
   button.attachLongPressStop([]() {
     mecho.setState(Mecho::State::OPENED);
-    Serial.println("hold");
   });
 }
 
 void loop() {
-  // Serial.println("Hello mf");
   button.tick();
   mecho.recieveSignal();
 }

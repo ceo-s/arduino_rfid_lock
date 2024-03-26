@@ -51,8 +51,6 @@ public:
     handle({mfrc.uid.size, mfrc.uid.uidByte});
   }
 
-
-
 private:
   State state;
   MFRC522 &mfrc;

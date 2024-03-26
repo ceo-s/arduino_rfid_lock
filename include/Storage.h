@@ -74,17 +74,9 @@ private:
 
   int findUID(UID uid) {
     // returns addr if uid present and -1 if not
-    Serial.print("Comparing.\nStorage size == ");
-    Serial.print(size_);
-    Serial.print('\n');
     for (int addr=START_ADDR; addr < getOffset(); addr += RECORD_SIZE) {
-      Serial.println("Comparing\n");
-      printRecord(addr);
-      Serial.println("");
-      printUID(uid);
       if (uidcmp(addr, uid)) return addr;
     }
-    Serial.println("Not found");
     return -1;
   }
 
@@ -99,19 +91,19 @@ private:
     return true;
   }
 
-  void printRecord(int addr) {
-    Serial.println("Record:");
-    Serial.print("  Size:    ");
-    size_t size = EEPROM.read(addr);
-    Serial.print(size);
-    Serial.print('\n');
-    Serial.print("  Data:    ");
+  // void printRecord(int addr) {
+  //   Serial.println("Record:");
+  //   Serial.print("  Size:    ");
+  //   size_t size = EEPROM.read(addr);
+  //   Serial.print(size);
+  //   Serial.print('\n');
+  //   Serial.print("  Data:    ");
 
-    for (size_t i=1; i <= size; i++) {
-      Serial.print(EEPROM.read(addr + i), HEX);
-      Serial.print("  ");
-    }
+  //   for (size_t i=1; i <= size; i++) {
+  //     Serial.print(EEPROM.read(addr + i), HEX);
+  //     Serial.print("  ");
+  //   }
 
-    Serial.print('\n');
-  }
+  //   Serial.print('\n');
+  // }
 };
