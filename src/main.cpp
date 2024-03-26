@@ -41,6 +41,7 @@ void setup() {
   lock.close();
   disp.verificationRequest();
 
+  Serial.begin(9600);
   SPI.begin();
   mfrc.PCD_Init();
 
