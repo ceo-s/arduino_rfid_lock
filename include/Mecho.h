@@ -52,6 +52,7 @@ public:
       lock.close();
       disp.verificationFailure();
     }
+    
   }
 
   void reg(byte uid[10], size_t size) {
