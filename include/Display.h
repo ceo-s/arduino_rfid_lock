@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include <LiquidCrystal.h>
+#include "UID.h"
 
 class Display {
 public:
@@ -10,39 +11,47 @@ public:
   ~Display() = default;
 
   void verificationRequest() {
-    print("Attach a pass:", "");
+    print("Verifying:", "Attach a pass");
   }
 
   void verificationSuccess() {
-    print("Welcome!", "");
+    print("Success:", "Lock is open");
   }
 
   void verificationFailure() {
-    print("Access denied!", "");
+    print("Access denied:", "Try again");
   }
 
   void registrationRequest() {
-    print("Attach a pass:", "");
+    print("Registrating:", "Attach a pass");
   }
 
   void registrationSuccess() {
-    print("Welcome!", "");
+    print("Succeess:", "Registered card");
   }
 
   void registrationFailure() {
-    print("Access denied!", "");
+    print("Failure:", "Storage is full");
   }
 
   void deletionRequest() {
-    print("Attach a pass:", "");
+    print("Deleting:", "Attach a pass");
   }
 
   void deletionSuccess() {
-    print("Welcome!", "");
+    print("Success:", "Deleted card");
   }
 
   void deletionFailure() {
-    print("Access denied!", "");
+    print("Failure:", "Card is last");
+  }
+
+  void closingSuccess(UID uid) {
+    print("Success:", "Door is closed");
+  }
+
+  void closingFailure() {
+    print("Failure:", "Card is bad");
   }
 
 private:
@@ -50,7 +59,8 @@ private:
   template<size_t S1, size_t S2>
   void print(const char (&str1)[S1], const char (&str2)[S2]) {
     lcd.clear();
-    lcd.println(str1);
-    lcd.println(str2);
+    lcd.print(str1);
+    lcd.setCursor(0, 1);
+    lcd.print(str2);
   }
 };

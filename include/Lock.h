@@ -6,9 +6,8 @@
 
 class Lock {
 public:
-  Lock(uint8_t pin) {
+  Lock(Servo &servo) : servo(servo) {
     state = State::CLOSED;
-    servo.attach(pin);
   }
   ~Lock() = default;
 
@@ -18,16 +17,18 @@ public:
   };
 
   void open() {
-    if (state == State::OPENED) return;
+    // if (state == State::OPENED) return;
     servo.write(LOCK_OPENED);
+    state = State::OPENED;
   }
 
   void close() {
-    if (state == State::CLOSED) return;
+    // if (state == State::CLOSED) return;
     servo.write(LOCK_CLOSED);
+    state = State::CLOSED;
   }
 
 private:
+  Servo &servo;
   State state;
-  Servo servo;
 };
