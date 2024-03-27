@@ -45,7 +45,7 @@ void setup() {
   SPI.begin();
   mfrc.PCD_Init();
 
-  mecho.setState(Mecho::State::OPENED);
+  mecho.setState(Mecho::State::VERIFYING);
 
   button.attachClick([]() {
     mecho.setState(Mecho::State::REGISTRATING);

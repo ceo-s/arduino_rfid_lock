@@ -3,6 +3,7 @@
 #include <EEPROM.h>
 #include "UID.h"
 
+#define SIZE_ADDR 9
 #define START_ADDR 10
 #define RECORD_SIZE 11 // 1 byte for size + 10 bytes for uid data
 #define STORAGE_CAPACITY 30
@@ -19,9 +20,11 @@ public:
 class UIDStorage : public BaseUIDStorage {
 public:
   UIDStorage() {
-
+    size_ = EEPROM.read(SIZE_ADDR);
   }
-  ~UIDStorage() = default;
+  ~UIDStorage() {
+    EEPROM.update(SIZE_ADDR, size_);
+  }
 
   bool saveUID(UID uid) {
     if (size_ == capacity_) return false;
@@ -33,7 +36,7 @@ public:
       EEPROM.update(addr + i, uid.data[i]);
     }
 
-    size_++;
+    updateSize(size_ + 1);
     return true;
   }
 
@@ -46,7 +49,7 @@ public:
     for (int i=0; i < 11; i++) {
       EEPROM.update(uidAddr + i, EEPROM.read(lastRecordAddr + i));
     }
-    size_--;
+    updateSize(size_ - 1);
 
     return true;
   }
@@ -56,17 +59,17 @@ public:
     return true;
   }
 
-  size_t size() {
+  inline size_t size() {
     return size_;
   }
 
-  size_t capacity() {
+  inline size_t capacity() {
     return capacity_;
   }
 
 private:
   size_t size_ = 0;
-  const size_t capacity_ = 6;
+  const size_t capacity_ = STORAGE_CAPACITY;
 
   int getOffset() {
     return size_ * RECORD_SIZE + START_ADDR;
@@ -89,6 +92,11 @@ private:
     }
 
     return true;
+  }
+
+  void updateSize(size_t newSize) {
+    size_ = newSize;
+    EEPROM.update(SIZE_ADDR, size_);
   }
 
   // void printRecord(int addr) {
