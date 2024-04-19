@@ -17,13 +17,11 @@ public:
   };
 
   void open() {
-    // if (state == State::OPENED) return;
     servo.write(LOCK_OPENED);
     state = State::OPENED;
   }
 
   void close() {
-    // if (state == State::CLOSED) return;
     servo.write(LOCK_CLOSED);
     state = State::CLOSED;
   }

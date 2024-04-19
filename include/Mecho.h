@@ -5,13 +5,22 @@
 #include "Storage.h"
 #include "Display.h"
 #include "UID.h"
+#include "LightMusic.h"
 
 #define DELAY_TIME 2500
 
 class Mecho {
 public:
-  Mecho(MFRC522 &mfrc, BaseUIDStorage &storage, Lock &lock, Display &disp)
-    :  mfrc(mfrc), storage(storage), lock(lock), disp(disp) {}
+  Mecho(MFRC522 &mfrc,
+        BaseUIDStorage &storage,
+        Lock &lock,
+        Display &disp,
+        LightMusic &lightMusic)
+        : mfrc(mfrc),
+          storage(storage),
+          lock(lock),
+          disp(disp),
+          lightMusic(lightMusic) {}
   ~Mecho() = default;
 
   enum class State {
@@ -21,7 +30,12 @@ public:
     DELETING,
   };
 
+  State getState() {
+    return state;
+  }
+
   void setState(State state) {
+    State oldState = this->state;
     this->state = state;
 
     switch (state) {
@@ -31,6 +45,9 @@ public:
         break;
 
       case State::OPENED:
+        if (oldState == State::REGISTRATING || oldState == State::DELETING) {
+          lightMusic.canceledSound();
+        }
         disp.verificationSuccess();
         lock.open();
         break;
@@ -57,16 +74,19 @@ private:
   BaseUIDStorage &storage;
   Lock &lock;
   Display &disp;
+  LightMusic &lightMusic;
 
   void verify(UID uid) {
     if (storage.UIDIsPresent(uid)) {
       lock.open();
       disp.verificationSuccess();
+      lightMusic.doorSound();
       delay(DELAY_TIME);
       setState(State::OPENED);
     } else {
       lock.close();
       disp.verificationFailure();
+      lightMusic.deniedSound();
       delay(DELAY_TIME);
       setState(State::VERIFYING);
     }
@@ -88,15 +108,27 @@ private:
   }
 
   void reg(UID uid) {
-    if (storage.saveUID(uid)) disp.registrationSuccess();
-    else disp.registrationFailure();
+    if (storage.saveUID(uid)) {
+      disp.registrationSuccess();
+      lightMusic.successSound();
+    }
+    else {
+      disp.registrationFailure();
+      lightMusic.deniedSound();
+    }
     delay(DELAY_TIME);
     setState(State::OPENED);
   }
 
   void del(UID uid) {
-    if (storage.deleteUID(uid)) disp.deletionSuccess();
-    else disp.deletionFailure();
+    if (storage.deleteUID(uid)) {
+      disp.deletionSuccess();
+      lightMusic.successSound();
+    }
+    else {
+      disp.deletionFailure();
+      lightMusic.deniedSound();
+    }
     delay(DELAY_TIME);
     setState(State::OPENED);
   }

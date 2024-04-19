@@ -19,11 +19,13 @@ public:
 
 class UIDStorage : public BaseUIDStorage {
 public:
-  UIDStorage() {
-    size_ = EEPROM.read(SIZE_ADDR);
-  }
+  UIDStorage() {}
   ~UIDStorage() {
     EEPROM.update(SIZE_ADDR, size_);
+  }
+
+  void init() {
+    size_ = EEPROM.read(SIZE_ADDR);
   }
 
   bool saveUID(UID uid) {
